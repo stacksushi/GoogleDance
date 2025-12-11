@@ -1,0 +1,378 @@
+{
+  "name": "4_2_searchgoogle_titlecompanylocation",
+  "nodes": [
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n        \"first_name\": {\n          \"type\": \"string\",\n          \"description\": \"first_name of the decision maker\"\n      },\n        \"last_name\": {\n          \"type\": \"string\",\n          \"description\": \"last_name of the decision maker\"\n      },\n        \"job_title\": {\n          \"type\": \"string\",\n          \"description\": \"job_title of the decision maker\"\n      },\n        \"linkedin_url\": {\n          \"type\": \"string\",\n          \"description\": \"linkedin_url of the decision maker\"\n      },\n        \"country\": {\n          \"type\": \"string\",\n          \"description\": \"country of the decision maker\"\n      },\n        \"location\": {\n          \"type\": \"string\",\n          \"description\": \"city or state of the decision maker, not country\"\n      },\n        \"email\": {\n          \"type\": \"string\",\n          \"description\": \"email of the decision maker\"\n      },\n        \"number\": {\n          \"type\": \"string\",\n          \"description\": \"phone number or mobile number of the decision maker\"\n      },\n        \"confidence_score\": {\n          \"type\": \"number\",\n          \"description\": \"1 if link belongs to company, 0 if it does not\"\n      },\n        \"reason\": {\n          \"type\": \"string\",\n          \"description\": \"Why you gave certain confidence score\"\n      }\n    },\n    \"required\": [\"confidence_score\", \"reason\"]\n}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        7136,
+        -912
+      ],
+      "id": "88837de7-d75e-4907-9749-0cc0025e7c33",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        6928,
+        -896
+      ],
+      "id": "0cf9d9b8-2428-4d83-b630-460cd1254491",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "2tO5TH8HPT7dzT49",
+          "name": "OpenAi Nishil account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        7328,
+        -1104
+      ],
+      "id": "dff259be-5f46-4407-bc5a-bf9094485447",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q\": \" \\\"CEO\\\" OR \\\"founder\\\" OR \\\"co-founder\\\" OR \\\"owner\\\" OR \\\"head of sales\\\" OR \\\"vp sales\\\" OR \\\"head of marketing\\\" OR \\\"director\\\",{{ $json.fields_company_name }}, {{ $json.fields_query_location }}\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6544,
+        -1088
+      ],
+      "id": "f4ed8ba7-d7f5-4289-ab5b-939c1716dda3",
+      "name": "Google title*company*location",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fxLmqPkkTWOyRn0M",
+          "name": "Serper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "fields_query_location",
+              "type": "any"
+            },
+            {
+              "name": "fields_company_name",
+              "type": "any"
+            },
+            {
+              "name": "fields_query",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "1267fe1f-ae05-4937-8f9f-178e68954d35",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        6336,
+        -1088
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e2ccfb6a-caa9-4803-a294-b8927b721655",
+              "leftValue": "={{ $json.organic }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        6704,
+        -1088
+      ],
+      "id": "d8936c6e-705a-4aa5-a739-729978e38d69",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "767991bd-db8a-480e-b394-d74281fb051b",
+              "leftValue": "={{ $json.confidence_score }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "23dea341-d273-4197-a617-712e0d06d616",
+              "leftValue": "={{ $json.first_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "75e3d090-6ef3-44c1-8752-b21deda9358d",
+              "leftValue": "={{ $json.last_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        7568,
+        -1104
+      ],
+      "id": "b01a3090-3eb8-4fe1-88de-57de64c1db24",
+      "name": "if confident1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# Task\nYour task is to provide a confidence_score  and decision_makers, based on search_results obtained. \n\n# Finding Decision Maker\nThe  decision_maker's job title must resemble of roles like these: CEO\", \"founder\", \"co-founder\", \"owner\", \"head of sales\", \"vp sales\", \"head of marketing\" or \"director\". \n\nThe decision maker must belong to this company: {{ $('Start').item.json.fields_company_name }} , which operates in the {{ $('Start').item.json.fields_query }} industry and located in {{ $('Start').item.json.fields_query_location }}. \n\n# confidence_score\nGive the confidence_score based on, if the person seems to be the decision maker of the the provided company. Confidence_score can either be 1, if the person belongs to business and 0 if it does not.\n\n# Reason\nAlso provide a short less than 50 word reason on why you gave a certain confidence_score.\n\n# Output Values\nYour final output json must be list of all decision_makers found and always have these values: first_name, last_name, job_title, location, country, confidence_score and reason.\n\n# Output and input examples\ninput_example_1: company_name is \"Netmark Digital Marketing Services\", snippet is \"Netmark is a premier digital marketing agency which was founded by John Doe\", industry is marketing agency, located in greater london, uk\n\noutput_example_1: decision_maker[0] is \"John Doe, founder\". confidence_score is 1, because reason is that results show he founder the company.\n\ninput_example_2: company_name is \"Holo Digital Services\", snippet is \"Holo helps business outreach to clients. for sales contact Tom Ford\", industry is digital agency, located in newyork, usa\n\noutput_example_2: decision_maker[0] is \"Tom Ford, Head of sales\" and his linkedin_ul is not found, hence don't mention it in output. confidence_score is 1, because reason is that results shows he handles sales for the company.\n\n# Output format\nReturn a JSON array of all decision makers found, where each object has: \n[first_name, last_name, job_title, linkedin_url, location, country, confidence_score, reason] \nIf certain field is not found, don't mention its key and value pair in output JSON array, unless it is required field.\n\n# search_results\nhere are the search_results obtained: \"{{ JSON.stringify($json.organic) }}\"",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        6960,
+        -1104
+      ],
+      "id": "c120142c-dfc9-4eda-a708-7d1137aa6c6f",
+      "name": "Agent extact decision maker",
+      "executeOnce": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ad7fd1a3-2db5-4355-a05d-402f2f2d3050",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7216,
+        -1248
+      ],
+      "id": "12e77e9f-5714-491d-95f5-2b6d29c0b5b2",
+      "name": "If1"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "fields_query_location": "London, UK",
+          "fields_company_name": "A&E Gas 24/7",
+          "fields_query": "plumbers"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent extact decision maker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent extact decision maker",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google title*company*location": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Google title*company*location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "if confident1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Agent extact decision maker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent extact decision maker": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "MGlt9ruNT5LuyF4p"
+  },
+  "versionId": "9412c049-d65e-4269-88d2-bb60c9490fd3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "210a6b77e243e6c47c9fc1d41eaba753b733a641e32f81e389d9b77e62c760e2"
+  },
+  "id": "eEVRIjKLxLlWfXSt",
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T11:38:59.261Z",
+      "createdAt": "2025-11-13T05:45:03.531Z",
+      "id": "PhyTAhEW0c0KDrXy",
+      "name": "ani_googledance"
+    }
+  ]
+}

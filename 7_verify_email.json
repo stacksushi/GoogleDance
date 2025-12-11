@@ -1,0 +1,2094 @@
+{
+  "name": "7_verify_email",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4640,
+        896
+      ],
+      "id": "9374c421-5009-4678-9ae7-e1b9a8425f37",
+      "name": "Wait4",
+      "webhookId": "be194c10-88c3-4b96-b332-afa09b48e7db"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8b1aea0a-97f8-4ad0-83d7-8573c6d06927",
+              "leftValue": "={{ $json.is_deliverable }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4128,
+        912
+      ],
+      "id": "0cb70324-2df1-4cd7-884a-e0e0674250af",
+      "name": "If is_deliverable"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4320,
+        416
+      ],
+      "id": "21f582dd-7e79-4874-852f-17e4da8da390",
+      "name": "wait for response1",
+      "webhookId": "edbc7904-734e-452d-bad4-fe53f582c73b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://connect.no2bounce.com/v2/n2b_validate_email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{$('Loop Over people').item.json.fields.email}}\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5120,
+        -16
+      ],
+      "id": "cdd46cdd-5353-4afa-9f84-72e850a2a31e",
+      "name": "Place no2bounce request",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E1JEFnaFdgK2LeY0",
+          "name": "no2bounce"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://connect.no2bounce.com/v2/n2b_validate_email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\"trackingId\":\"{{ $('Place no2bounce request').item.json.data.trackingId }}\"}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4176,
+        256
+      ],
+      "id": "695eeaea-9278-4388-81cb-417c7798bbc4",
+      "name": "Get no2bounce result",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E1JEFnaFdgK2LeY0",
+          "name": "no2bounce"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2e36d619-3ca4-49d1-8293-6174dead8136",
+              "leftValue": "={{ $json.overallStatus }}",
+              "rightValue": "Completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4400,
+        256
+      ],
+      "id": "6ff765e7-78a8-474a-83b4-cdc4788d0ee4",
+      "name": "If response received"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5344,
+        -16
+      ],
+      "id": "25572367-5f53-4b93-b948-0e8c16d1ab8d",
+      "name": "wait for response",
+      "webhookId": "b8190a0c-6b7d-49f9-97b8-bbfda9b42649"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f03c4beb-09e3-4d4d-ae43-f71ddf96e136",
+              "leftValue": "={{ $json.result.scoreStatus }}",
+              "rightValue": "Deliverable/AcceptAll",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4656,
+        240
+      ],
+      "id": "b8e05817-0634-44b0-91ee-94ba21449a76",
+      "name": "If catchall deliverable"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4d4241c5-7607-4602-a9aa-a13bf86e5737",
+              "leftValue": "={{ $json.is_catch_all }}",
+              "rightValue": "\"true\"",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4864,
+        0
+      ],
+      "id": "02094a37-28a3-422e-88ca-fc672782565c",
+      "name": "If catchall"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fdf27770-dd19-44d9-a307-9297d4f60a93",
+              "leftValue": "={{ $json.fields.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4352,
+        -80
+      ],
+      "id": "4459f4dd-6f6d-443c-ad2f-350917ef27cb",
+      "name": "If email exists2"
+    },
+    {
+      "parameters": {
+        "url": "https://emailverifier.reoon.com/api/v1/verify",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"email\": \"{{ $json.fields.email }}\",\n  \"mode\": \"power\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4624,
+        -96
+      ],
+      "id": "9455974b-f51e-4f85-872b-0b67e315e4f0",
+      "name": "Reoon Email verify",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "zT80iiyp8gjHcZ9I",
+          "name": "Reoon email verifier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "tables",
+              "type": "any"
+            },
+            {
+              "name": "id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "1b20044d-9fb3-48e6-9eee-adafcb906667",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        3584,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.airtable.com/v0/{{ $json.base_id }}/{{ $json.people_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "offset",
+                    "value": "={{ $response.body.offset }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.offset }}"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4048,
+        -368
+      ],
+      "id": "38423c48-4142-4cdb-a149-1e6360bef7e1",
+      "name": "Get People records",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5UrVHJdXya4cHw24",
+          "name": "Airtable"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b1baf78-b141-456b-a4fc-b0eebf759957",
+              "name": "base_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "074ad2e4-09fd-4e3a-815d-a211a190f8db",
+              "name": "business_id",
+              "value": "={{ $json.tables[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "975f1b53-a65e-40ab-9e5f-c4ea2e502c5e",
+              "name": "business_wout_people_id",
+              "value": "={{ $json.tables[1].id }}",
+              "type": "string"
+            },
+            {
+              "id": "1334a5bb-ca34-45a8-b52e-d724827fd36f",
+              "name": "people_id",
+              "value": "={{ $json.tables[2].id }}",
+              "type": "string"
+            },
+            {
+              "id": "39ab63e1-8561-4ad9-9660-bb960d007d77",
+              "name": "people_wout_details_id",
+              "value": "={{ $json.tables[3].id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3808,
+        -368
+      ],
+      "id": "00c8ab8c-d4e7-4a8a-9f1d-0d20d08dbe93",
+      "name": "Table_ids"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "records",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -368
+      ],
+      "id": "dc075aa9-f8c9-486e-b8f4-da93ba54c9b7",
+      "name": "Split people",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4064,
+        -96
+      ],
+      "id": "2d821f9f-7e2b-424f-8404-ae83f043babf",
+      "name": "Loop Over people",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Loop Over people').item.json.id }}",
+            "is_email_deliverable": "={{ true }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "industry",
+              "displayName": "industry",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "functional_area",
+              "displayName": "functional_area",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "temp_is_catchall",
+              "displayName": "temp_is_catchall",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "temp_catchall_score",
+              "displayName": "temp_catchall_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "temp_catchall_status",
+              "displayName": "temp_catchall_status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        5200,
+        448
+      ],
+      "id": "f2c89d8a-95aa-48b5-9c5f-eb32baedd052",
+      "name": "Update is_email_deliverable in people",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_wout_details_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        5072,
+        672
+      ],
+      "id": "247a833c-7755-4e5a-9372-e9c356123767",
+      "name": "Create people_wout_details record",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteRecord",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "id": "={{ $('Loop Over people').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        5280,
+        672
+      ],
+      "id": "d7b8bf93-466d-4b0b-9306-80a861186a3a",
+      "name": "Delete record from people",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Loop Over people').item.json.id }}",
+            "is_email_deliverable": "={{ $json.is_deliverable }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Domain",
+              "displayName": "Domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "industry",
+              "displayName": "industry",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "functional_area",
+              "displayName": "functional_area",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4448,
+        896
+      ],
+      "id": "d4aa8bf0-b8e2-4838-9fe3-17084598d36f",
+      "name": "Update is_email_deliverable in people1",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_wout_details_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "first_name": "={{ $('Loop Over people').item.json.fields.first_name }}",
+            "last_name": "={{ $('Loop Over people').item.json.fields.last_name }}",
+            "title": "={{ $('Loop Over people').item.json.fields.title }}",
+            "linkedin_url": "={{ $('Loop Over people').item.json.fields.linkedin_url }}",
+            "email_source": "={{ $('Loop Over people').item.json.fields.email_source }}",
+            "is_email_deliverable": "={{ $('Loop Over people').item.json.fields.is_email_deliverable }}",
+            "company_name": "={{ $('Loop Over people').item.json.fields.company_name }}",
+            "domain": "={{ $('Loop Over people').item.json.fields.domain }}",
+            "email": "={{ $('Loop Over people').item.json.fields.email }}",
+            "phone": "={{ $('Loop Over people').item.json.fields.phone }}",
+            "country": "={{ $('Loop Over people').item.json.fields.country }}",
+            "location": "={{ $('Loop Over people').item.json.fields.location }}",
+            "people_source": "={{ $('Loop Over people').item.json.fields.people_source }}",
+            "name_confidence_score": "={{ $('Loop Over people').item.json.fields.name_confidence_score }}",
+            "name_confidence_score_reason": "={{ $('Loop Over people').item.json.fields. name_confidence_score_reason }}",
+            "linkedin_confidence_score": "={{ $('Loop Over people').item.json.fields.linkedin_confidence_score }}",
+            "linkedin_confidence_score_reason": "={{ $('Loop Over people').item.json.fields.linkedin_confidence_score_reason }}",
+            "notfound_reason": "notcatchall_notdeliverable"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "people_source",
+              "displayName": "people_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name_confidence_score",
+              "displayName": "name_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name_confidence_score_reason",
+              "displayName": "name_confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_confidence_score",
+              "displayName": "linkedin_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_confidence_score_reason",
+              "displayName": "linkedin_confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "notfound_reason",
+              "displayName": "notfound_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4448,
+        1152
+      ],
+      "id": "dade2372-7acb-4481-88d6-374840fec794",
+      "name": "Create people_wout_details record1",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteRecord",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "id": "={{ $('Loop Over people').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4656,
+        1152
+      ],
+      "id": "6d9b0fa9-c2d9-401d-960a-61ff0831df31",
+      "name": "Delete record from people2",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## reason\nnotcatchall_notdeliverable"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4784,
+        656
+      ],
+      "typeVersion": 1,
+      "id": "beb9d5d0-7da4-4f95-ba64-85c89fe6b8d6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7d35c9f6-b217-484b-9a4c-29059fefe347",
+              "leftValue": "={{ $json.records }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3808,
+        -80
+      ],
+      "id": "6a135099-26db-459f-a4d1-30281024fc02",
+      "name": "If airtable not emtpy"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "tables": [
+            {
+              "id": "tblOCx9cCLLTLpUtA",
+              "name": "Business",
+              "description": "List of businesses in Area",
+              "primaryFieldId": "fldKc72GbkqvAXUdY",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldKc72GbkqvAXUdY",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldWLbbL1QxrvDOLS",
+                  "name": "address",
+                  "description": "Address"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld7xon2O44ZNMxji",
+                  "name": "category",
+                  "description": "Category"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldm8mfXkGjx730Q2",
+                  "name": "phone",
+                  "description": "Phone number"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldx0WFMBnHpcSHz5",
+                  "name": "website",
+                  "description": "website"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldoSrH3Cj1kEgZB7",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldV25rIdXmeBrxzF",
+                  "name": "website_source",
+                  "description": "website_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldmLpBI9FKUaxfiL",
+                  "name": "google_cid",
+                  "description": "google_cid"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld6AUnUOik1y40DA",
+                  "name": "query",
+                  "description": "query"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldsCL8nJ2hrQCrDh",
+                  "name": "query_location",
+                  "description": "query_location"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldlgGOsld6dTrD3v",
+                  "name": "website_confidence_score",
+                  "description": "website_confidence_score"
+                },
+                {
+                  "type": "multilineText",
+                  "id": "flda8bKBx1Z4lzmHf",
+                  "name": "website_confidence_reason",
+                  "description": "website_confidence_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwvgIzkHUoRPI3ot",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tbl6qxAmmrcrhB9Oo",
+              "name": "Business_wout_people",
+              "description": "List of businesses where decision makers not found",
+              "primaryFieldId": "fldjXu73WRrExwMmT",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldjXu73WRrExwMmT",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldVtbIK308ynUY6h",
+                  "name": "address",
+                  "description": "Address"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldoTWhPYoFG1KS88",
+                  "name": "category",
+                  "description": "Category"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "flduxGrkXgjah19fQ",
+                  "name": "phone",
+                  "description": "Phone number"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldcTGxRC5SwUpovU",
+                  "name": "website",
+                  "description": "website"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldJRIrvtgTR934as",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldRSjPLKfqE2BtHL",
+                  "name": "website_source",
+                  "description": "website_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldtZIreCVP98k9zB",
+                  "name": "google_cid",
+                  "description": "google_cid"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldkBlSMuvA91QheC",
+                  "name": "query",
+                  "description": "query"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld1J6IYCmeN7DkHt",
+                  "name": "query_location",
+                  "description": "query_location"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldGzwGtw0XzzaI6F",
+                  "name": "website_confidence_score",
+                  "description": "website_confidence_score"
+                },
+                {
+                  "type": "multilineText",
+                  "id": "fldN0LlWMSYQGcIPa",
+                  "name": "website_confidence_reason",
+                  "description": "website_confidence_reason"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldeS3hsC9zVPgOhj",
+                  "name": "notfound_reason",
+                  "description": "notfound_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwAkvh93LaU6qU2f",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblBSPtH9fZ6q7RXN",
+              "name": "People",
+              "description": "Decision Makers of business",
+              "primaryFieldId": "fld6jng7nLBCGPdgY",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fld6jng7nLBCGPdgY",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "flduiWxsigD1PPZlW",
+                  "name": "first_name",
+                  "description": "first_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld2TnxQXTyQ5Lotg",
+                  "name": "last_name",
+                  "description": "last_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldLcrBbd2Q86cgmO",
+                  "name": "title",
+                  "description": "Job title"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldgKcnSchMOJ3snN",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "email",
+                  "id": "fldaIXWDjgW3IDwx5",
+                  "name": "email",
+                  "description": "email"
+                },
+                {
+                  "type": "phoneNumber",
+                  "id": "fldGEY2nLvzyKiaS1",
+                  "name": "phone",
+                  "description": "phone"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldpY4f4EV1pKcXdD",
+                  "name": "country",
+                  "description": "country"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldowSPn1MCLgZE2D",
+                  "name": "location",
+                  "description": "location"
+                },
+                {
+                  "type": "url",
+                  "id": "fldLcZIsN3ifw4mM1",
+                  "name": "linkedin_url",
+                  "description": "linkedin_url"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldYFlZDWFzVfDJ5n",
+                  "name": "people_source",
+                  "description": "people_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldJ5YfNkMpvxMPRs",
+                  "name": "email_source",
+                  "description": "email_source"
+                },
+                {
+                  "type": "checkbox",
+                  "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                  },
+                  "id": "fldoltePzEOJJgmHm",
+                  "name": "is_email_deliverable",
+                  "description": "is_email_deliverable"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldgSwXjy8Hl7sNlx",
+                  "name": "name_confidence_score",
+                  "description": "name_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldmxDO2FYo21sWRM",
+                  "name": "name_confidence_score_reason",
+                  "description": "name_confidence_score_reason"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldQnsGDczayNv1ji",
+                  "name": "linkedin_confidence_score",
+                  "description": "linkedin_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldS9ulcIBAziXDC3",
+                  "name": "linkedin_confidence_score_reason",
+                  "description": "linkedin_confidence_score_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwskhGlOnYzMGhzG",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblxWDIjqbjGwN8IS",
+              "name": "People_wout_details",
+              "description": "Decision Makers of business without contact details",
+              "primaryFieldId": "fldKRrSj0oSk0N4ql",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldKRrSj0oSk0N4ql",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld6savv1qzsPLFTH",
+                  "name": "first_name",
+                  "description": "first_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldBa7yfTnNXFSee9",
+                  "name": "last_name",
+                  "description": "last_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldmAIko7ae8vXKAg",
+                  "name": "title",
+                  "description": "Job title"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld2R4KW3EDRKcpAY",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "email",
+                  "id": "fldVanhyb5t73FPNi",
+                  "name": "email",
+                  "description": "email"
+                },
+                {
+                  "type": "phoneNumber",
+                  "id": "fldleef0aGNXhFDJM",
+                  "name": "phone",
+                  "description": "phone"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldP7geR38aAHyF3J",
+                  "name": "country",
+                  "description": "country"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldyF3C6eEEBKPCky",
+                  "name": "location",
+                  "description": "location"
+                },
+                {
+                  "type": "url",
+                  "id": "fldy8oMcBqgVCu0m1",
+                  "name": "linkedin_url",
+                  "description": "linkedin_url"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "flduSLehlsCZ7furG",
+                  "name": "people_source",
+                  "description": "people_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "flddosFsxhD2ezi8H",
+                  "name": "email_source",
+                  "description": "email_source"
+                },
+                {
+                  "type": "checkbox",
+                  "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                  },
+                  "id": "fldnj0GyRoBVzft1O",
+                  "name": "is_email_deliverable",
+                  "description": "is_email_deliverable"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldVc2ALGDMAg8Hsn",
+                  "name": "name_confidence_score",
+                  "description": "name_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld5OJt6SNDtVbTdv",
+                  "name": "name_confidence_score_reason",
+                  "description": "name_confidence_score_reason"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldVWc5JkkKJBN7sL",
+                  "name": "linkedin_confidence_score",
+                  "description": "linkedin_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldbBQMnx7TcyV24h",
+                  "name": "linkedin_confidence_score_reason",
+                  "description": "linkedin_confidence_score_reason"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldpr9haebMscdvhT",
+                  "name": "notfound_reason",
+                  "description": "notfound_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwDgFlyzQWUJKy4W",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            }
+          ],
+          "id": "appl1jI5uQ31q4XNV"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Reoon Email verify": {
+      "main": [
+        [
+          {
+            "node": "If catchall",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If catchall": {
+      "main": [
+        [
+          {
+            "node": "Place no2bounce request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If is_deliverable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Place no2bounce request": {
+      "main": [
+        [
+          {
+            "node": "wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get no2bounce result": {
+      "main": [
+        [
+          {
+            "node": "If response received",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If response received": {
+      "main": [
+        [
+          {
+            "node": "If catchall deliverable",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "wait for response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If email exists2": {
+      "main": [
+        [
+          {
+            "node": "Reoon Email verify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait for response": {
+      "main": [
+        [
+          {
+            "node": "Get no2bounce result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait for response1": {
+      "main": [
+        [
+          {
+            "node": "Get no2bounce result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If is_deliverable": {
+      "main": [
+        [
+          {
+            "node": "Update is_email_deliverable in people1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create people_wout_details record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If catchall deliverable": {
+      "main": [
+        [
+          {
+            "node": "Update is_email_deliverable in people",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create people_wout_details record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Table_ids",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get People records": {
+      "main": [
+        [
+          {
+            "node": "If airtable not emtpy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Table_ids": {
+      "main": [
+        [
+          {
+            "node": "Get People records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split people": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over people": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If email exists2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update is_email_deliverable in people": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create people_wout_details record": {
+      "main": [
+        [
+          {
+            "node": "Delete record from people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete record from people": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update is_email_deliverable in people1": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create people_wout_details record1": {
+      "main": [
+        [
+          {
+            "node": "Delete record from people2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete record from people2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If airtable not emtpy": {
+      "main": [
+        [
+          {
+            "node": "Split people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "MGlt9ruNT5LuyF4p"
+  },
+  "versionId": "6bf64af4-fc5a-4ebe-967f-b953048f1497",
+  "meta": {
+    "instanceId": "210a6b77e243e6c47c9fc1d41eaba753b733a641e32f81e389d9b77e62c760e2"
+  },
+  "id": "I0FGgi1XGvoRTRz8",
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T11:38:59.261Z",
+      "createdAt": "2025-11-13T05:45:03.531Z",
+      "id": "PhyTAhEW0c0KDrXy",
+      "name": "ani_googledance"
+    }
+  ]
+}

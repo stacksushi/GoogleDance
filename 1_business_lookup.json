@@ -1,0 +1,1668 @@
+{
+  "name": "1_business_lookup",
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "places",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        944,
+        176
+      ],
+      "id": "1b129a1f-c40f-4ab5-82cd-66dd12705327",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/places",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"q\":\"{{ $('Start').item.json.form_elements[\"Product/ Service Name\"] }}\", \"gl\":\"{{ $json.countryCode }}\", \"page\":3}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        176
+      ],
+      "id": "43daaea7-64c5-4716-a30d-fd1977b64fb3",
+      "name": "GSearch Business at Location",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fxLmqPkkTWOyRn0M",
+          "name": "Serper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.airtable_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.airtable_tables[0].id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $json.title }}",
+            "address": "={{ $json.address }}",
+            "category": "={{ $json.category }}",
+            "phone": "={{ $json.phoneNumber }}",
+            "google_cid": "={{ $json.cid }}",
+            "query": "={{ $('Start').item.json.form_elements['Product/ Service Name'] }}",
+            "query_location": "={{ $('Start').item.json.form_elements.City }}, {{ $('Start').item.json.form_elements.Country }}",
+            "website_confidence_score": 0
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_source",
+              "displayName": "website_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "google_cid",
+              "displayName": "google_cid",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "query_location",
+              "displayName": "query_location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_confidence_score",
+              "displayName": "website_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_confidence_reason",
+              "displayName": "website_confidence_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        -32
+      ],
+      "id": "1da566ed-2a68-4a40-b6b3-246e3c43ea14",
+      "name": "Create Business record wout website",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.airtable_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.airtable_tables[0].id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $json.title }}",
+            "address": "={{ $json.address }}",
+            "category": "={{ $json.category }}",
+            "phone": "={{ $json.phoneNumber }}",
+            "website": "={{ $json.website }}",
+            "domain": "={{ $json.domain }}",
+            "website_source": "Google Search Card",
+            "google_cid": "={{ $json.cid }}",
+            "query": "={{ $('Start').item.json.form_elements['Product/ Service Name'] }}",
+            "query_location": "={{ $('Start').item.json.form_elements.City }}, {{ $('Start').item.json.form_elements.Country }}",
+            "website_confidence_score": 1,
+            "website_confidence_reason": "Direct find in Google search card"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_source",
+              "displayName": "website_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "google_cid",
+              "displayName": "google_cid",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "query_location",
+              "displayName": "query_location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_confidence_score",
+              "displayName": "website_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "website_confidence_reason",
+              "displayName": "website_confidence_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        -224
+      ],
+      "id": "b10c0287-7fa8-4b4c-9a9f-e1f9b23ea896",
+      "name": "Create Business record with website",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "cid",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        -96
+      ],
+      "id": "a5d08db9-9b13-46c0-9b5f-721d69191bf8",
+      "name": "Remove Duplicate Business"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "842e7acc-7ab5-4a66-8b97-ba8a05178eae",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        -96
+      ],
+      "id": "eb9376ab-4b04-4c02-91b0-2c0369181832",
+      "name": "If website exists"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        240,
+        128
+      ],
+      "id": "dfd81d5b-a274-4b6d-bf6c-a5aab2280396",
+      "name": "Loop over areas",
+      "executeOnce": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2144,
+        -112
+      ],
+      "id": "adc89468-7850-4947-a6ed-feea5f6f7403",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define your array\nconst usa_cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Philadelphia'];\nconst uk_cities = ['London', 'Birmingham', 'Leeds', 'Glasgow', 'Sheffield'];\n\n// Determine which city list to use\nconst selectedCountry = $('Start').first().json.form_elements['Country'];\n\nlet cities;\nif (selectedCountry === \"UK\") {\n\tcities = uk_cities;\n} else if (selectedCountry === \"USA\") {\n\tcities = usa_cities;\n} else {\n\tcities = []; // fallback if no match\n}\n\nlet countryCode;\nif (selectedCountry === \"UK\") {\n\tcountryCode = \"GB\";\n} else if (selectedCountry === \"USA\") {\n\tcountryCode = \"US\";\n} else {\n\tcountryCode = \"US\"; // fallback if no match\n}\n\n// Define limit\nconst limit = $('Start').first().json.form_elements['Number of locations'];\n\n// Slice and return\nconst limitedCities = cities.slice(0, limit);\n\n// return limitedCities.map(city => ({\n// \tjson: { city }\n// }));\n\nreturn [{ json: { countryCode } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -96
+      ],
+      "id": "293fb1d9-dd34-41d4-a6d4-8093263a4628",
+      "name": "Get Areas"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2288,
+        400
+      ],
+      "id": "fe381967-d07a-401d-aecc-f938e0966998",
+      "name": "Wait",
+      "webhookId": "4b38dd19-8d2e-4b50-966b-67f248ed1a45",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "form_elements",
+              "type": "any"
+            },
+            {
+              "name": "airtable_id",
+              "type": "any"
+            },
+            {
+              "name": "airtable_tables",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "7cb9720c-58ed-419c-9193-6d07e12e7d2c",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Gets the details of the airtable we are working with (airtable base id & tables id) and query (business, location we are searching for)",
+        "height": 192,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        -304
+      ],
+      "typeVersion": 1,
+      "id": "dde82f4b-08e5-4c6a-8fea-512e8755c60a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Input the cities available in the location submitted by user in query. Can be dynamic by making api call, but hard coded for now.",
+        "height": 192,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        -304
+      ],
+      "typeVersion": 1,
+      "id": "7c3302ef-b9e8-4bb7-a45c-007b0d9eebf2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Go over each location one at a time",
+        "height": 192,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "ac00fde6-37c0-4e6c-ba18-8bbb2dd5030a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Make Google search through Serper API, to find the Business at a location (eg. Plumbers in Greenwich, Greater London, UK)",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "9fb4c2fd-17b2-4196-98ff-51ddbe0d24ce",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "Remove duplicates by Unique id (Google's CID), because searching in nearby areas often returns same business",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "3db3182a-e165-4f13-aa76-fe048acb0f69",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "Seperate business with and without websites. This will be useful later when trying to find decision makers of a business",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "acdfe5fe-a816-406e-b9ec-11214780a925",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "Save business records to airtable details like: company name, address, website (if available)",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1056,
+        -464
+      ],
+      "typeVersion": 1,
+      "id": "213a911a-9c18-490a-8bd0-cf9119099904",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "Used because im connecting both branches here, no real data is used from merged nodes but required to keep the workflow running",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1264,
+        -464
+      ],
+      "typeVersion": 1,
+      "id": "830ad367-5cb2-43c3-a411-b2469876f541",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "Serper api returns the data in an array inside a json. This array is split into seperate items so that they can be saved in airtable (one business per row)",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "83469155-7379-471a-9634-30e87e92b6ba",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "Waiting to not hit the rate limits of serper API",
+        "height": 208,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1232,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "7b716828-155f-4d73-adc8-5a15fa25f20f",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23d70be7-ae9d-4c25-a85d-695c28b0d84d",
+              "name": "website",
+              "value": "={{\n  (() => {\n    const url = $json.website;\n\n    if (!url) return '';\n\n    // Remove social pages\n    if (url.includes('facebook.com') || url.includes('fb.com') || url.includes('yelp.com')) {\n      return '';\n    }\n\n    // Extract base domain only (strip path + queries)\n    const base = url.extractDomain();\n    if (!base) return '';\n\n    // Preserve original protocol\n    const protocol = url.startsWith('https://') ? 'https://' : 'http://';\n\n    // Add www. only if missing\n    const normalized = base.replace(/^(?!www\\.)/i, 'www.');\n\n    return protocol + normalized;\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "aa162a62-e3ee-4618-a4d8-86e2079aa502",
+              "name": "domain",
+              "value": "={{\n  (() => {\n    const url = $json.website;\n\n    if (!url) return '';\n\n    // Remove social pages\n    if (url.includes('facebook.com') || url.includes('fb.com') || url.includes('yelp.com')) {\n      return '';\n    }\n\n    // Extract base domain only (strip path + queries)\n    const base = url.extractDomain().replace('www.','');\n    if (!base) return '';\n\n    return base;\n  })()\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        112
+      ],
+      "id": "0b00154d-5b00-45dc-838c-033571b0aa46",
+      "name": "normalising fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3f825371-ae24-4c7a-9e14-9c486bb72a33",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1264,
+        176
+      ],
+      "id": "46a19c08-981f-48a8-b9dd-ae3e37460b0c",
+      "name": "If website"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b5e1b0a3-9fd7-4ea2-9dbc-e4ac2792ded4",
+              "name": "phoneNumber",
+              "value": "={{ $json.phoneNumber.replaceAll(' ','').replace('(','').replace(')','').replace('+','') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        400
+      ],
+      "id": "e01fbcac-76e4-47e4-b708-b6b4176e1180",
+      "name": "normalising fields1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2112,
+        192
+      ],
+      "id": "f9a22307-baa3-494e-9421-9ff311c293c9",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0ba17f7a-452e-4622-bf14-7bb710422b0c",
+              "leftValue": "={{ $json.phoneNumber }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1520,
+        320
+      ],
+      "id": "3b479e12-612b-4c9a-99dd-28c5ef4c9489",
+      "name": "If phonenumber"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0ba17f7a-452e-4622-bf14-7bb710422b0c",
+              "leftValue": "={{ $json.phoneNumber }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        112
+      ],
+      "id": "4ae11629-a68a-4c1a-8666-e40cfa7373be",
+      "name": "If phonenumber1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23d70be7-ae9d-4c25-a85d-695c28b0d84d",
+              "name": "website",
+              "value": "={{\n  (() => {\n    const url = $json.website;\n\n    if (!url) return '';\n\n    // Remove social pages\n    if (url.includes('facebook.com') || url.includes('fb.com') || url.includes('yelp.com')) {\n      return '';\n    }\n\n    // Extract base domain only (strip path + queries)\n    const base = url.extractDomain();\n    if (!base) return '';\n\n    // Preserve original protocol\n    const protocol = url.startsWith('https://') ? 'https://' : 'http://';\n\n    // Add www. only if missing\n    const normalized = base.replace(/^(?!www\\.)/i, 'www.');\n\n    return protocol + normalized;\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "aa162a62-e3ee-4618-a4d8-86e2079aa502",
+              "name": "domain",
+              "value": "={{\n  (() => {\n    const url = $json.website;\n\n    if (!url) return '';\n\n    // Remove social pages\n    if (url.includes('facebook.com') || url.includes('fb.com') || url.includes('yelp.com')) {\n      return '';\n    }\n\n    // Extract base domain only (strip path + queries)\n    const base = url.extractDomain().replace('www.','');\n    if (!base) return '';\n\n    return base;\n  })()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "b5e1b0a3-9fd7-4ea2-9dbc-e4ac2792ded4",
+              "name": "phoneNumber",
+              "value": "={{ $json.phoneNumber.replaceAll(' ','').replace('(','').replace(')','').replace('+','') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        256
+      ],
+      "id": "d02fd6df-804c-4ab9-a591-08e5054d1d4e",
+      "name": "normalising fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9f3b5c4-a352-4059-843e-6d6a0c6679e9",
+              "name": "title",
+              "value": "={{\n  $json.title\n    .toSentenceCase()\n    .replaceSpecialChars()\n    .replace(/\\b(ltd|ltd\\.|limited|pvt ltd|private limited|inc|inc\\.|llc|co|co\\.|company)\\b\\.?$/i, '') \n    .trim()\n    .replace(/\\s+/g, ' ')\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        176
+      ],
+      "id": "173a3afa-be09-49a7-81a9-3c29def1c577",
+      "name": "normalising fields4"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -16
+      ],
+      "id": "8f0925d4-c836-481a-aec7-6258e9f4a836",
+      "name": "Limit"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "form_elements": {
+            "Product/ Service Name": "machine components supplier",
+            "City": "New York",
+            "Country": "USA",
+            "Email": "anirudhchundawat97@gmail.com",
+            "Number of locations": 3
+          },
+          "airtable_id": "app4s4WheBcmWTuNp",
+          "airtable_tables": [
+            {
+              "id": "tbln9po0pRQFZf8iC",
+              "name": "Business",
+              "description": "List of businesses in Area",
+              "primaryFieldId": "fldOfPWGnN8RAInk0",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldOfPWGnN8RAInk0",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldpbWtJIlKnRRlVa",
+                  "name": "address",
+                  "description": "Address"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld6pN42UVaua5K2Z",
+                  "name": "category",
+                  "description": "Category"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldvYVGxGym8agIrQ",
+                  "name": "phone",
+                  "description": "Phone number"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldpeUBWC72Uwkshv",
+                  "name": "website",
+                  "description": "website"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldqoxneiW2TN9qVP",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldf81DhxPD3leEnQ",
+                  "name": "website_source",
+                  "description": "website_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldOTEyvB7It3ftAu",
+                  "name": "google_cid",
+                  "description": "google_cid"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldx86tgjS23ZLI8p",
+                  "name": "query",
+                  "description": "query"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldLbsa4n9MwaLfZM",
+                  "name": "query_location",
+                  "description": "query_location"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldLORHjrvzCby1DL",
+                  "name": "website_confidence_score",
+                  "description": "website_confidence_score"
+                },
+                {
+                  "type": "multilineText",
+                  "id": "fldBmU2V9kLfqcChK",
+                  "name": "website_confidence_reason",
+                  "description": "website_confidence_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwOJYlKfwPOLztjm",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblVjo8oPA1eQoPtg",
+              "name": "Business_wout_people",
+              "description": "List of businesses where decision makers not found",
+              "primaryFieldId": "fldscJeEMnUIMoqPG",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldscJeEMnUIMoqPG",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldfuj0M49X8Kgd6b",
+                  "name": "address",
+                  "description": "Address"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld8kaMEXggqWkKyD",
+                  "name": "category",
+                  "description": "Category"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldCls9480EeCMfnD",
+                  "name": "phone",
+                  "description": "Phone number"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldSnrFJ7bGc5SMwI",
+                  "name": "website",
+                  "description": "website"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldOBxx3idG3EILHi",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldgKNSgTXQGX1PXD",
+                  "name": "website_source",
+                  "description": "website_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld71Cs6UDaodh2iu",
+                  "name": "google_cid",
+                  "description": "google_cid"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldH1sY7MCkxFerG1",
+                  "name": "query",
+                  "description": "query"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld0maV7vwxuS9Bjn",
+                  "name": "query_location",
+                  "description": "query_location"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldqEgunGUILlwslm",
+                  "name": "website_confidence_score",
+                  "description": "website_confidence_score"
+                },
+                {
+                  "type": "multilineText",
+                  "id": "fldgvl3IGcpdI9h7Z",
+                  "name": "website_confidence_reason",
+                  "description": "website_confidence_reason"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldjkycsHJbDeTGZC",
+                  "name": "notfound_reason",
+                  "description": "notfound_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viw5fNJepEcQv1eMs",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblUPDQOV4ECyzxbb",
+              "name": "People",
+              "description": "Decision Makers of business",
+              "primaryFieldId": "fldYWjHQ6zBTeDR1i",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldYWjHQ6zBTeDR1i",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldMqTlDUayJGE6MP",
+                  "name": "first_name",
+                  "description": "first_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldV6su69iGvaQEqu",
+                  "name": "last_name",
+                  "description": "last_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldEEvl3bcCiBSb3g",
+                  "name": "title",
+                  "description": "Job title"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldgRi6O9rVwl90vy",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "email",
+                  "id": "fldxd49NL44172RWo",
+                  "name": "email",
+                  "description": "email"
+                },
+                {
+                  "type": "phoneNumber",
+                  "id": "fld5Crco3tsBih5iu",
+                  "name": "phone",
+                  "description": "phone"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldY8Hhrqbf9P4kag",
+                  "name": "country",
+                  "description": "country"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldycygWSeoKqeVc0",
+                  "name": "location",
+                  "description": "location"
+                },
+                {
+                  "type": "url",
+                  "id": "fldJVMVgCFBPit9gs",
+                  "name": "linkedin_url",
+                  "description": "linkedin_url"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldVrCIhs6d8oDatg",
+                  "name": "people_source",
+                  "description": "people_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldO3MOldQNLC4A2k",
+                  "name": "email_source",
+                  "description": "email_source"
+                },
+                {
+                  "type": "checkbox",
+                  "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                  },
+                  "id": "fldjSmdBFDCWVpf2d",
+                  "name": "is_email_deliverable",
+                  "description": "is_email_deliverable"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldacOsPrO62xjARo",
+                  "name": "name_confidence_score",
+                  "description": "name_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldwCnA8Mgdh3jYiv",
+                  "name": "name_confidence_score_reason",
+                  "description": "name_confidence_score_reason"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldfQGOxS1rjwowhe",
+                  "name": "linkedin_confidence_score",
+                  "description": "linkedin_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldy8oNLA5UzsKIPa",
+                  "name": "linkedin_confidence_score_reason",
+                  "description": "linkedin_confidence_score_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwEW1d5Sh08FxXQh",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblVKwoLzlwSqgEoA",
+              "name": "People_wout_details",
+              "description": "Decision Makers of business without contact details",
+              "primaryFieldId": "fldP5ygQdA3epIARa",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldP5ygQdA3epIARa",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldMdOJxlPFTrmz3x",
+                  "name": "first_name",
+                  "description": "first_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld9yC8uNoz7k81Fu",
+                  "name": "last_name",
+                  "description": "last_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldcEKWmHnSML7I8L",
+                  "name": "title",
+                  "description": "Job title"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldAl84LCh4GrYD44",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "email",
+                  "id": "fldELwOoW5bk28Wl8",
+                  "name": "email",
+                  "description": "email"
+                },
+                {
+                  "type": "phoneNumber",
+                  "id": "fldMApVhVpFEERUj0",
+                  "name": "phone",
+                  "description": "phone"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldM5mmXQ7HQ48J8f",
+                  "name": "country",
+                  "description": "country"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldta69g1uhaxdC7Z",
+                  "name": "location",
+                  "description": "location"
+                },
+                {
+                  "type": "url",
+                  "id": "fldhoulzGWTVYga6v",
+                  "name": "linkedin_url",
+                  "description": "linkedin_url"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldSu82yW3dCKJWW6",
+                  "name": "people_source",
+                  "description": "people_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldMFaUtIbv8y16F2",
+                  "name": "email_source",
+                  "description": "email_source"
+                },
+                {
+                  "type": "checkbox",
+                  "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                  },
+                  "id": "flduSFQLDA8c2OJ2e",
+                  "name": "is_email_deliverable",
+                  "description": "is_email_deliverable"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldfmatsz7WGBT6GG",
+                  "name": "name_confidence_score",
+                  "description": "name_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldwv9IuQaIdrNjkL",
+                  "name": "name_confidence_score_reason",
+                  "description": "name_confidence_score_reason"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldKbXNk9sFJKjUhV",
+                  "name": "linkedin_confidence_score",
+                  "description": "linkedin_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldjiBwduClkK65DE",
+                  "name": "linkedin_confidence_score_reason",
+                  "description": "linkedin_confidence_score_reason"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldT1VIp1zrFjgLEO",
+                  "name": "notfound_reason",
+                  "description": "notfound_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwtXF73g1ch1Hgfd",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "GSearch Business at Location": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "normalising fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicate Business": {
+      "main": [
+        [
+          {
+            "node": "If website exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If website exists": {
+      "main": [
+        [
+          {
+            "node": "Create Business record with website",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Business record wout website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop over areas": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GSearch Business at Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Business record wout website": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Create Business record with website": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Areas": {
+      "main": [
+        [
+          {
+            "node": "Loop over areas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop over areas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Areas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "normalising fields": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If website": {
+      "main": [
+        [
+          {
+            "node": "If phonenumber1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If phonenumber",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "normalising fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "If phonenumber": {
+      "main": [
+        [
+          {
+            "node": "normalising fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "If phonenumber1": {
+      "main": [
+        [
+          {
+            "node": "normalising fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "normalising fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "normalising fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "normalising fields4": {
+      "main": [
+        [
+          {
+            "node": "If website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "MGlt9ruNT5LuyF4p"
+  },
+  "versionId": "e07d9796-fcaa-4de9-ab20-5655b8465659",
+  "meta": {
+    "instanceId": "210a6b77e243e6c47c9fc1d41eaba753b733a641e32f81e389d9b77e62c760e2"
+  },
+  "id": "tCtHV7ZeGrFUi1ji",
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T11:38:59.261Z",
+      "createdAt": "2025-11-13T05:45:03.531Z",
+      "id": "PhyTAhEW0c0KDrXy",
+      "name": "ani_googledance"
+    }
+  ]
+}

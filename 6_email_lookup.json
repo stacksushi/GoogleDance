@@ -1,0 +1,2211 @@
+{
+  "name": "6_email_lookup",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "deleteRecord",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Start').item.json.tables[2].id }}",
+          "mode": "id"
+        },
+        "id": "={{ $('Loop Over people').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3520,
+        832
+      ],
+      "id": "8c81226f-0724-4475-8de4-55a1ac89e181",
+      "name": "Delete notfound record from people1",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## V3\nif email not exist, serach leadmagic using first and last name",
+        "height": 144,
+        "width": 192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3136,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "23fad902-3d66-49a5-b974-bbcf6729129a",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/api/v1/people/match",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"linkedin_url\": \"{{ $('Loop Over people').item.json.fields.linkedin_url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3376,
+        416
+      ],
+      "id": "81f49d15-1b97-4b93-8f83-6d784992d952",
+      "name": "Apollo",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8Ixq3YJoEfz55LYk",
+          "name": "Apollo.io"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "45d68781-027b-4ab3-851b-13fd6dd21780",
+              "leftValue": "={{ $json.person.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3568,
+        416
+      ],
+      "id": "e5bc6f81-adb6-44a9-9351-e5d9f08f0b68",
+      "name": "If email exists1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4080,
+        400
+      ],
+      "id": "b6d5419a-1350-49b3-8caf-80f052e38a05",
+      "name": "Wait3",
+      "webhookId": "aa2e0a60-62bf-4bc7-a3fb-01b8a922865f"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4384,
+        112
+      ],
+      "id": "ddfded14-9b35-4d31-9f5a-bf321e3d0742",
+      "name": "Wait 10s1",
+      "webhookId": "9e8b8729-8c91-46f7-97ce-a0c81239b8aa"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "45d68781-027b-4ab3-851b-13fd6dd21780",
+              "leftValue": "={{ $json.work_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3888,
+        128
+      ],
+      "id": "2e5fc17d-02be-4585-90a9-335d24995bb3",
+      "name": "If email exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5aafc19a-207b-40e9-b58d-9d1dbe849050",
+              "leftValue": "={{ $json.fields.linkedin_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3520,
+        -144
+      ],
+      "id": "90178127-1d65-4a89-b773-5292d7388783",
+      "name": "If linkedin exists"
+    },
+    {
+      "parameters": {
+        "url": "https://contacts.muraena.ai/api/client_api/reveal/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={   \n  \"linkedin_url\": \"{{ $json.fields.linkedin_url }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3152,
+        144
+      ],
+      "id": "259b29f3-4101-466a-82a8-0f97340512b1",
+      "name": "Muraena",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WulM1wrYd8AH8wAX",
+          "name": "Muraena"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.airtable.com/v0/{{ $('Start').item.json.id }}/{{ $('Start').item.json.tables[2].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "offset",
+                    "value": "={{ $response.body.offset }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.offset }}"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2800,
+        -416
+      ],
+      "id": "512b9564-b959-4ba9-bb7a-bf929a289144",
+      "name": "Get People records",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5UrVHJdXya4cHw24",
+          "name": "Airtable"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "tables",
+              "type": "any"
+            },
+            {
+              "name": "id",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "e231c754-1b1b-469c-8b2f-c943fe7cdec1",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        2224,
+        -416
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_wout_details_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Loop Over people').item.json.id }}",
+            "email_source": "Muraena",
+            "email": "={{ $json.work_email }}",
+            "phone": "={{ $json.phone_numbers }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "people_source",
+              "displayName": "people_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "confidence_score",
+              "displayName": "confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "confidence_score_reason",
+              "displayName": "confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4176,
+        112
+      ],
+      "id": "2f0ab1cb-ca8c-4ef0-9c5d-3db961e05f08",
+      "name": "Update email from muraena",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Loop Over people').item.json.id }}",
+            "email": "={{ $('Apollo').item.json.person.email }}",
+            "email_source": "apollo"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "people_source",
+              "displayName": "people_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "confidence_score",
+              "displayName": "confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "confidence_score_reason",
+              "displayName": "confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3840,
+        400
+      ],
+      "id": "d41c5058-e7ff-4725-b9eb-22d5f0068cd0",
+      "name": "Update email from apollo",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_wout_details_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $('Loop Over people').item.json.fields.company_name }}",
+            "first_name": "={{ $('Loop Over people').item.json.fields.first_name }}",
+            "last_name": "={{ $('Loop Over people').item.json.fields.last_name }}",
+            "title": "={{ $('Loop Over people').item.json.fields.title }}",
+            "domain": "={{ $('Loop Over people').item.json.fields.domain }}",
+            "country": "={{ $('Loop Over people').item.json.fields.country }}",
+            "location": "={{ $('Loop Over people').item.json.fields.location }}",
+            "linkedin_url": "={{ $('Loop Over people').item.json.fields.linkedin_url }}",
+            "notfound_reason": "=database_email_notfound",
+            "name_confidence_score": "={{ $('Loop Over people').item.json.fields.name_confidence_score }}",
+            "linkedin_confidence_score": "={{ $('Loop Over people').item.json.fields.linkedin_confidence_score }}",
+            "name_confidence_score_reason": "={{ $('Loop Over people').item.json.fields.name_confidence_score_reason }}",
+            "linkedin_confidence_score_reason": "={{ $('Loop Over people').item.json.fields.linkedin_confidence_score_reason }}",
+            "people_source": "={{ $('Loop Over people').item.json.fields.people_source }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "people_source",
+              "displayName": "people_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "name_confidence_score",
+              "displayName": "name_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name_confidence_score_reason",
+              "displayName": "name_confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_confidence_score",
+              "displayName": "linkedin_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_confidence_score_reason",
+              "displayName": "linkedin_confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "notfound_reason",
+              "displayName": "notfound_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3312,
+        832
+      ],
+      "id": "ca53f36f-9b2f-4277-837a-13e5b37a3288",
+      "name": "Create people_wout_email record",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteRecord",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_id }}",
+          "mode": "id"
+        },
+        "id": "={{ $('Loop Over people').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3904,
+        -128
+      ],
+      "id": "3bba118b-6c73-4761-b344-7baac89c9a30",
+      "name": "Delete notfound record from people",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.base_id }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Table_ids').item.json.people_wout_details_id }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $('Loop Over people').item.json.fields.company_name }}",
+            "first_name": "={{ $('Loop Over people').item.json.fields.first_name }}",
+            "last_name": "={{ $('Loop Over people').item.json.fields.last_name }}",
+            "title": "={{ $('Loop Over people').item.json.fields.title }}",
+            "domain": "={{ $('Loop Over people').item.json.fields.domain }}",
+            "country": "={{ $('Loop Over people').item.json.fields.country }}",
+            "location": "={{ $('Loop Over people').item.json.fields.location }}",
+            "linkedin_url": "={{ $('Loop Over people').item.json.fields.linkedin_url }}",
+            "notfound_reason": "=linkedin_notfound",
+            "name_confidence_score": "={{ $('Loop Over people').item.json.fields.name_confidence_score }}",
+            "linkedin_confidence_score": "={{ $('Loop Over people').item.json.fields.linkedin_confidence_score }}",
+            "name_confidence_score_reason": "={{ $('Loop Over people').item.json.fields.name_confidence_score_reason }}",
+            "linkedin_confidence_score_reason": "={{ $('Loop Over people').item.json.fields.linkedin_confidence_score_reason }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "people_source",
+              "displayName": "people_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email_source",
+              "displayName": "email_source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "is_email_deliverable",
+              "displayName": "is_email_deliverable",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "name_confidence_score",
+              "displayName": "name_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name_confidence_score_reason",
+              "displayName": "name_confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_confidence_score",
+              "displayName": "linkedin_confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "linkedin_confidence_score_reason",
+              "displayName": "linkedin_confidence_score_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "notfound_reason",
+              "displayName": "notfound_reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3696,
+        -128
+      ],
+      "id": "2b3497e2-7271-4823-adc6-d3311dc99c78",
+      "name": "Create people_wout_email record1",
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9IkwtRMeZgSxkGyN",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "records",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        -432
+      ],
+      "id": "49470549-606b-4f49-ae03-4e9864c089c5",
+      "name": "Split each people",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2896,
+        -144
+      ],
+      "id": "5a95f42e-9a84-42fd-89b0-8383aca00a8a",
+      "name": "Loop Over people",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f1c6e6b1-948c-4a3b-9daa-c92b56946488",
+              "leftValue": "={{ $json.results }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3680,
+        144
+      ],
+      "id": "8a887451-f1d8-4cff-9049-39f0f61bbf1d",
+      "name": "if muraena result exist"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b1baf78-b141-456b-a4fc-b0eebf759957",
+              "name": "base_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "074ad2e4-09fd-4e3a-815d-a211a190f8db",
+              "name": "business_id",
+              "value": "={{ $json.tables[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "975f1b53-a65e-40ab-9e5f-c4ea2e502c5e",
+              "name": "business_wout_people_id",
+              "value": "={{ $json.tables[1].id }}",
+              "type": "string"
+            },
+            {
+              "id": "1334a5bb-ca34-45a8-b52e-d724827fd36f",
+              "name": "people_id",
+              "value": "={{ $json.tables[2].id }}",
+              "type": "string"
+            },
+            {
+              "id": "39ab63e1-8561-4ad9-9660-bb960d007d77",
+              "name": "people_wout_details_id",
+              "value": "={{ $json.tables[3].id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2496,
+        -416
+      ],
+      "id": "c0699d55-8d46-44b5-95ce-a50cb66ed947",
+      "name": "Table_ids"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7d35c9f6-b217-484b-9a4c-29059fefe347",
+              "leftValue": "={{ $json.records }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3008,
+        -416
+      ],
+      "id": "d0d52b13-d056-403c-bcb4-e3c45f784974",
+      "name": "If airtable not emtpy"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "24f99690-5194-457e-b728-494877701fdf",
+              "leftValue": "={{ $json.fields.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3136,
+        -128
+      ],
+      "id": "511d087c-508c-4365-9d09-9d570578d539",
+      "name": "If email exists2"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "tables": [
+            {
+              "id": "tblpoZRh3Km067Oco",
+              "name": "Business",
+              "description": "List of businesses in Area",
+              "primaryFieldId": "fldWAEnM6Ke6HUhoR",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldWAEnM6Ke6HUhoR",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldtZ1W5ubxEIm5TG",
+                  "name": "address",
+                  "description": "Address"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld4uNLHxo7NdmdIw",
+                  "name": "category",
+                  "description": "Category"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldvWoVAtC9MlaphT",
+                  "name": "phone",
+                  "description": "Phone number"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld3Mwf3uNsYfmgWk",
+                  "name": "website",
+                  "description": "website"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldn70Se43CZ9cRlX",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldeVKSmiNDODFHUH",
+                  "name": "website_source",
+                  "description": "website_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldJR34nFacCVfW1e",
+                  "name": "google_cid",
+                  "description": "google_cid"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldEOsqZFcLqfnicb",
+                  "name": "query",
+                  "description": "query"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldy2AO4HcjWA1zZS",
+                  "name": "query_location",
+                  "description": "query_location"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldKca7t3XIy7YcZ7",
+                  "name": "website_confidence_score",
+                  "description": "website_confidence_score"
+                },
+                {
+                  "type": "multilineText",
+                  "id": "fld3Ix42RwApwcD54",
+                  "name": "website_confidence_reason",
+                  "description": "website_confidence_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwnJmQvMedNKf9c7",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblq8U3AK7eHWYVzY",
+              "name": "Business_wout_people",
+              "description": "List of businesses where decision makers not found",
+              "primaryFieldId": "fld7DtVlvBIx7E5jx",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fld7DtVlvBIx7E5jx",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld2HV3rWA4MkbSGp",
+                  "name": "address",
+                  "description": "Address"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldcGDBjSyrVnOTyZ",
+                  "name": "category",
+                  "description": "Category"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldHrRcF0OsXkL1m7",
+                  "name": "phone",
+                  "description": "Phone number"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldkp748oauvB617W",
+                  "name": "website",
+                  "description": "website"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldaUWrFIPkrtkgXx",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld9VgfZb5j0NReFT",
+                  "name": "website_source",
+                  "description": "website_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldDCgEqrExBStQmA",
+                  "name": "google_cid",
+                  "description": "google_cid"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldfzQVlV0OII4VQg",
+                  "name": "query",
+                  "description": "query"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldMMjF1aPmHEcWNd",
+                  "name": "query_location",
+                  "description": "query_location"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldLJwcLU1Lfm0cMr",
+                  "name": "website_confidence_score",
+                  "description": "website_confidence_score"
+                },
+                {
+                  "type": "multilineText",
+                  "id": "fld4RIIoMUHtvLJ5o",
+                  "name": "website_confidence_reason",
+                  "description": "website_confidence_reason"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldWhFM1j2oPsdf6K",
+                  "name": "notfound_reason",
+                  "description": "notfound_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwWWYKMmtwh8v91W",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblQzlSFSZvLb9xFf",
+              "name": "People",
+              "description": "Decision Makers of business",
+              "primaryFieldId": "fldx5nzcrWq0cTxnT",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldx5nzcrWq0cTxnT",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldUWFOI8QRvnWoeY",
+                  "name": "first_name",
+                  "description": "first_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldkPTEcs7ee9dghw",
+                  "name": "last_name",
+                  "description": "last_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld3ytGCAOe15N7FZ",
+                  "name": "title",
+                  "description": "Job title"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldrM5LNf7hkzj9px",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "email",
+                  "id": "fldgt4S1ax9b65dwh",
+                  "name": "email",
+                  "description": "email"
+                },
+                {
+                  "type": "phoneNumber",
+                  "id": "fldUrdrEUvIp8M45o",
+                  "name": "phone",
+                  "description": "phone"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldVFUIvlG00AXjBf",
+                  "name": "country",
+                  "description": "country"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldW7zX3aCh4Bvwia",
+                  "name": "location",
+                  "description": "location"
+                },
+                {
+                  "type": "url",
+                  "id": "fldCFWXYG5XvQxdef",
+                  "name": "linkedin_url",
+                  "description": "linkedin_url"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldkHptROPRN5eD1y",
+                  "name": "people_source",
+                  "description": "people_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldIyzSuScJm14HCn",
+                  "name": "email_source",
+                  "description": "email_source"
+                },
+                {
+                  "type": "checkbox",
+                  "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                  },
+                  "id": "fldFbOac2DLkooW0h",
+                  "name": "is_email_deliverable",
+                  "description": "is_email_deliverable"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldPIJHcdqORgKY5r",
+                  "name": "name_confidence_score",
+                  "description": "name_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldow0tU5h0D8HICD",
+                  "name": "name_confidence_score_reason",
+                  "description": "name_confidence_score_reason"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldlswwqOM8ESYdmc",
+                  "name": "linkedin_confidence_score",
+                  "description": "linkedin_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldRDSBTe1qd8I0uK",
+                  "name": "linkedin_confidence_score_reason",
+                  "description": "linkedin_confidence_score_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwc4bUzMATZpqzXd",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            },
+            {
+              "id": "tblXuqDsOpkmqPYNg",
+              "name": "People_wout_details",
+              "description": "Decision Makers of business without contact details",
+              "primaryFieldId": "fldpNmN9ph3aWvorJ",
+              "fields": [
+                {
+                  "type": "singleLineText",
+                  "id": "fldpNmN9ph3aWvorJ",
+                  "name": "company_name",
+                  "description": "Company Name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld6kSGUIiRxlgFbl",
+                  "name": "first_name",
+                  "description": "first_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldNZEt2CKTqT5jnD",
+                  "name": "last_name",
+                  "description": "last_name"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldpnmVYhGwH1RXtp",
+                  "name": "title",
+                  "description": "Job title"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fld2CS8ffqCRgxwGy",
+                  "name": "domain",
+                  "description": "domain"
+                },
+                {
+                  "type": "email",
+                  "id": "fldf2dHaG1lMg0yQG",
+                  "name": "email",
+                  "description": "email"
+                },
+                {
+                  "type": "phoneNumber",
+                  "id": "fldFTlwfTjvQ2MgQN",
+                  "name": "phone",
+                  "description": "phone"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldR81Ypnker2lhT5",
+                  "name": "country",
+                  "description": "country"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldR9TrrZ64GNtJlq",
+                  "name": "location",
+                  "description": "location"
+                },
+                {
+                  "type": "url",
+                  "id": "fldaRwbUuuvSp6kSP",
+                  "name": "linkedin_url",
+                  "description": "linkedin_url"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldgJco7sRrrzTVte",
+                  "name": "people_source",
+                  "description": "people_source"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldlrPshg9zYKlKv2",
+                  "name": "email_source",
+                  "description": "email_source"
+                },
+                {
+                  "type": "checkbox",
+                  "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                  },
+                  "id": "fldDBxukXip4eClyr",
+                  "name": "is_email_deliverable",
+                  "description": "is_email_deliverable"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fldN3pz05skuyOgR7",
+                  "name": "name_confidence_score",
+                  "description": "name_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldmCJBMRTxdeS1tm",
+                  "name": "name_confidence_score_reason",
+                  "description": "name_confidence_score_reason"
+                },
+                {
+                  "type": "number",
+                  "options": {
+                    "precision": 0
+                  },
+                  "id": "fld9Q0xrXTW3RzwaQ",
+                  "name": "linkedin_confidence_score",
+                  "description": "linkedin_confidence_score"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldM93hR2ts6nvK83",
+                  "name": "linkedin_confidence_score_reason",
+                  "description": "linkedin_confidence_score_reason"
+                },
+                {
+                  "type": "singleLineText",
+                  "id": "fldHldux2qrdhUJTs",
+                  "name": "notfound_reason",
+                  "description": "notfound_reason"
+                }
+              ],
+              "views": [
+                {
+                  "id": "viwreXW96DyYl36lE",
+                  "name": "Grid view",
+                  "type": "grid"
+                }
+              ]
+            }
+          ],
+          "id": "appVgDo6rslNBGT2o"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Muraena": {
+      "main": [
+        [
+          {
+            "node": "if muraena result exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apollo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If email exists": {
+      "main": [
+        [
+          {
+            "node": "Update email from muraena",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apollo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apollo": {
+      "main": [
+        [
+          {
+            "node": "If email exists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If email exists1": {
+      "main": [
+        [
+          {
+            "node": "Update email from apollo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create people_wout_email record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10s1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete notfound record from people1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If linkedin exists": {
+      "main": [
+        [
+          {
+            "node": "Muraena",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create people_wout_email record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get People records": {
+      "main": [
+        [
+          {
+            "node": "If airtable not emtpy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Table_ids",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update email from muraena": {
+      "main": [
+        [
+          {
+            "node": "Wait 10s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update email from apollo": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create people_wout_email record": {
+      "main": [
+        [
+          {
+            "node": "Delete notfound record from people1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create people_wout_email record1": {
+      "main": [
+        [
+          {
+            "node": "Delete notfound record from people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete notfound record from people": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split each people": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over people": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If email exists2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if muraena result exist": {
+      "main": [
+        [
+          {
+            "node": "If email exists",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apollo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Table_ids": {
+      "main": [
+        [
+          {
+            "node": "Get People records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If airtable not emtpy": {
+      "main": [
+        [
+          {
+            "node": "Split each people",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If email exists2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over people",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If linkedin exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "MGlt9ruNT5LuyF4p",
+    "timezone": "Asia/Kolkata"
+  },
+  "versionId": "43bd1c9e-0851-42bc-bf97-84e2748155bc",
+  "meta": {
+    "instanceId": "210a6b77e243e6c47c9fc1d41eaba753b733a641e32f81e389d9b77e62c760e2"
+  },
+  "id": "bYDNTfQZtqBq8BGe",
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T11:38:59.261Z",
+      "createdAt": "2025-11-13T05:45:03.531Z",
+      "id": "PhyTAhEW0c0KDrXy",
+      "name": "ani_googledance"
+    }
+  ]
+}

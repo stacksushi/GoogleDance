@@ -1,0 +1,1211 @@
+{
+  "name": "0_googledance",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Finding Business\n#### Searching Business at location and saving details to airtable",
+        "height": 336,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1184,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "7fbdb55e-49d3-4416-b010-b499e6169c8b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Searching Database\n#### Checking existing database (Muraena, Apollo, openmart, etc) for decision maker names",
+        "height": 336,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1728,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "5e08d68f-4cd2-4b88-babd-8a9e9fc6ca65",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Inputs\n- airtable workspace id\n- airtable api access token\n- openai api key",
+        "height": 208,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "df009f69-3798-4ee0-83ac-317949f16af9",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## Airtable tables schema\n- 0 - business\n- 1 - busiess_wout_people\n- 2 - people\n- 3 - people_wout_email",
+        "height": 208,
+        "width": 224,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "896bf621-f8a7-42ac-a97d-b147dc855ca7",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Submitted to list builder",
+        "completionMessage": "=Building verified email list for {{ $json[\"Product/ Service Name\"] }} businesses in {{ $json.City }}, {{ $json.Country }}.\n\nDownload link will be sent to {{ $json.Email }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        320,
+        -256
+      ],
+      "id": "085d02ef-a0cd-4342-a035-9ae0f25f230b",
+      "name": "Form Response",
+      "webhookId": "f21abd8b-906d-4aa1-b06c-ec43afc22e0f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.airtable.com/v0/meta/bases",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"name\": \"{{ $('FormData').item.json['Product/ Service Name'].toSnakeCase() }}_{{ $('FormData').item.json.Country.toSnakeCase() }}\",\n    \"tables\": [\n      {\n        \"description\": \"List of businesses in Area\",\n        \"fields\": [\n          {\n            \"description\": \"Company Name\",\n            \"name\": \"company_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Address\",\n            \"name\": \"address\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Category\",\n            \"name\": \"category\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Phone number\",\n            \"name\": \"phone\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"website\",\n            \"name\": \"website\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"domain\",\n            \"name\": \"domain\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"website_source\",\n            \"name\": \"website_source\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"google_cid\",\n            \"name\": \"google_cid\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"query\",\n            \"name\": \"query\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"query_location\",\n            \"name\": \"query_location\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"website_confidence_score\",\n            \"name\": \"website_confidence_score\",\n            \"type\": \"number\",\n            \"options\": {\n              \"precision\": 0}\n          },\n          {\n            \"description\": \"website_confidence_reason\",\n            \"name\": \"website_confidence_reason\",\n            \"type\": \"multilineText\"\n          }\n        ],\n        \"name\": \"Business\"\n      },\n      {\n        \"description\": \"List of businesses where decision makers not found\",\n        \"fields\": [\n          {\n            \"description\": \"Company Name\",\n            \"name\": \"company_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Address\",\n            \"name\": \"address\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Category\",\n            \"name\": \"category\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Phone number\",\n            \"name\": \"phone\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"website\",\n            \"name\": \"website\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"domain\",\n            \"name\": \"domain\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"website_source\",\n            \"name\": \"website_source\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"google_cid\",\n            \"name\": \"google_cid\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"query\",\n            \"name\": \"query\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"query_location\",\n            \"name\": \"query_location\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"website_confidence_score\",\n            \"name\": \"website_confidence_score\",\n            \"type\": \"number\",\n            \"options\": {\n              \"precision\": 0}\n          },\n          {\n            \"description\": \"website_confidence_reason\",\n            \"name\": \"website_confidence_reason\",\n            \"type\": \"multilineText\"\n          },\n          {\n            \"description\": \"notfound_reason\",\n            \"name\": \"notfound_reason\",\n            \"type\": \"singleLineText\"\n          }\n        ],\n        \"name\": \"Business_wout_people\"\n      },\n      {\n        \"description\": \"Decision Makers of business\",\n        \"fields\": [\n          {\n            \"description\": \"Company Name\",\n            \"name\": \"company_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"first_name\",\n            \"name\": \"first_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"last_name\",\n            \"name\": \"last_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Job title\",\n            \"name\": \"title\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"domain\",\n            \"name\": \"domain\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"email\",\n            \"name\": \"email\",\n            \"type\": \"email\"\n          },\n          {\n            \"description\": \"phone\",\n            \"name\": \"phone\",\n            \"type\": \"phoneNumber\"\n          },\n          {\n            \"description\": \"country\",\n            \"name\": \"country\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"location\",\n            \"name\": \"location\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"linkedin_url\",\n            \"name\": \"linkedin_url\",\n            \"type\": \"url\"\n          },\n          {\n            \"description\": \"people_source\",\n            \"name\": \"people_source\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"email_source\",\n            \"name\": \"email_source\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"is_email_deliverable\",\n            \"name\": \"is_email_deliverable\",\n            \"type\": \"checkbox\",\n            \"options\": {\n              \"color\": \"greenBright\",\n              \"icon\": \"check\"}\n          },\n          {\n            \"description\": \"name_confidence_score\",\n            \"name\": \"name_confidence_score\",\n            \"type\": \"number\",\n            \"options\": {\n              \"precision\": 0}\n          },\n          {\n            \"description\": \"name_confidence_score_reason\",\n            \"name\": \"name_confidence_score_reason\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"linkedin_confidence_score\",\n            \"name\": \"linkedin_confidence_score\",\n            \"type\": \"number\",\n            \"options\": {\n              \"precision\": 0}\n          },\n          {\n            \"description\": \"linkedin_confidence_score_reason\",\n            \"name\": \"linkedin_confidence_score_reason\",\n            \"type\": \"singleLineText\"\n          }\n        ],\n        \"name\": \"People\"\n      },\n      {\n        \"description\": \"Decision Makers of business without contact details\",\n        \"fields\": [\n          {\n            \"description\": \"Company Name\",\n            \"name\": \"company_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"first_name\",\n            \"name\": \"first_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"last_name\",\n            \"name\": \"last_name\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"Job title\",\n            \"name\": \"title\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"domain\",\n            \"name\": \"domain\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"email\",\n            \"name\": \"email\",\n            \"type\": \"email\"\n          },\n          {\n            \"description\": \"phone\",\n            \"name\": \"phone\",\n            \"type\": \"phoneNumber\"\n          },\n          {\n            \"description\": \"country\",\n            \"name\": \"country\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"location\",\n            \"name\": \"location\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"linkedin_url\",\n            \"name\": \"linkedin_url\",\n            \"type\": \"url\"\n          },\n          {\n            \"description\": \"people_source\",\n            \"name\": \"people_source\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"email_source\",\n            \"name\": \"email_source\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"is_email_deliverable\",\n            \"name\": \"is_email_deliverable\",\n            \"type\": \"checkbox\",\n            \"options\": {\n              \"color\": \"greenBright\",\n              \"icon\": \"check\"}\n          },\n          {\n            \"description\": \"name_confidence_score\",\n            \"name\": \"name_confidence_score\",\n            \"type\": \"number\",\n            \"options\": {\n              \"precision\": 0}\n          },\n          {\n            \"description\": \"name_confidence_score_reason\",\n            \"name\": \"name_confidence_score_reason\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"linkedin_confidence_score\",\n            \"name\": \"linkedin_confidence_score\",\n            \"type\": \"number\",\n            \"options\": {\n              \"precision\": 0}\n          },\n          {\n            \"description\": \"linkedin_confidence_score_reason\",\n            \"name\": \"linkedin_confidence_score_reason\",\n            \"type\": \"singleLineText\"\n          },\n          {\n            \"description\": \"notfound_reason\",\n            \"name\": \"notfound_reason\",\n            \"type\": \"singleLineText\"\n          }\n        ],\n        \"name\": \"People_wout_details\"\n      }\n    ],\n    \"workspaceId\": \"wspBHSLjFEQe4e5NH\"\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1504,
+        -112
+      ],
+      "id": "dfd71bf7-dd23-4794-a1dc-30553e7b90e3",
+      "name": "Create airtable",
+      "executeOnce": true,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5UrVHJdXya4cHw24",
+          "name": "Airtable"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "tCtHV7ZeGrFUi1ji",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/tCtHV7ZeGrFUi1ji",
+          "cachedResultName": "1/8 business_lookup - serper_v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "airtable_tables": "={{ $('Create airtable').item.json.tables }}",
+            "airtable_id": "={{ $('Create airtable').item.json.id }}",
+            "form_elements": "={{ $('FormData').item.json }}"
+          },
+          "matchingColumns": [
+            "",
+            "id",
+            "tables",
+            "Country",
+            "City",
+            "_firstItem"
+          ],
+          "schema": [
+            {
+              "id": "form_elements",
+              "displayName": "form_elements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "airtable_id",
+              "displayName": "airtable_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "airtable_tables",
+              "displayName": "airtable_tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1696,
+        -112
+      ],
+      "name": "1/8 business_lookup - serper_v1",
+      "id": "66269fe9-b5d4-4db6-8f70-e286b1b5e9ef",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "8fcpvrsfOFkIzVhK",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/8fcpvrsfOFkIzVhK",
+          "cachedResultName": "2/8website_lookup - serper_v2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tables": "={{ $('Create airtable').item.json.tables }}",
+            "id": "={{ $('Create airtable').item.json.id }}"
+          },
+          "matchingColumns": [
+            "tables",
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1952,
+        -112
+      ],
+      "name": "2/8website_lookup - serper_v2",
+      "id": "368855d1-f373-4e2e-a0a0-68eb3559e304",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FByx8UTlT6Yq8WUg",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FByx8UTlT6Yq8WUg",
+          "cachedResultName": "3/8people_lookup - serper_v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create airtable').item.json.id }}",
+            "tables": "={{ $('Create airtable').item.json.tables }}"
+          },
+          "matchingColumns": [
+            "id",
+            "tables"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2224,
+        -112
+      ],
+      "name": "3/8people_lookup - serper_v1",
+      "id": "f1ee80d5-9f56-4689-adf5-a1c58d93da96",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "WCFII5W36B0i6W3I",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/WCFII5W36B0i6W3I",
+          "cachedResultName": "4/8agent_people_lookup - serper_v2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create airtable').item.json.id }}",
+            "tables": "={{ $('Create airtable').item.json.tables }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2496,
+        -112
+      ],
+      "id": "10bfb903-84ae-4b2c-b5e6-46a300c392d0",
+      "name": "4/8agent_people_lookup - serper_v2",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "fOzeBDzlFKbLlyfz",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/fOzeBDzlFKbLlyfz",
+          "cachedResultName": "5/8linkedin_lookup - serper_v2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create airtable').item.json.id }}",
+            "tables": "={{ $('Create airtable').item.json.tables }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        2752,
+        -112
+      ],
+      "id": "c58677f7-4e7a-46ec-ad3f-8da7d309e7d4",
+      "name": "5/8linkedin_lookup - serper_v2",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "bYDNTfQZtqBq8BGe",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/bYDNTfQZtqBq8BGe",
+          "cachedResultName": "6/8email_lookup - serper_v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tables": "={{ $('Create airtable').item.json.tables }}",
+            "id": "={{ $('Create airtable').item.json.id }}"
+          },
+          "matchingColumns": [
+            "tables",
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3024,
+        -112
+      ],
+      "name": "6/8email_lookup - serper_v1",
+      "id": "db3b71d3-ca6c-4523-954b-e040649b8363",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "I0FGgi1XGvoRTRz8",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/I0FGgi1XGvoRTRz8",
+          "cachedResultName": "7/8verify_email - serper_v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tables": "={{ $('Create airtable').item.json.tables }}",
+            "id": "={{ $('Create airtable').item.json.id }}"
+          },
+          "matchingColumns": [
+            "tables",
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3280,
+        -112
+      ],
+      "name": "7/8verify_email - serper_v1",
+      "id": "fd69f3b0-a3de-408f-92ce-4f5c539add7d",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "4elFk70VDUWsq1sT",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/4elFk70VDUWsq1sT",
+          "cachedResultName": "8/8 Email list - serper_v2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "form_elements": "={{ $('FormData').item.json }}",
+            "tables": "={{ $('Create airtable').item.json.tables }}",
+            "airtable_id": "={{ $('Create airtable').item.json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "form_elements",
+              "displayName": "form_elements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tables",
+              "displayName": "tables",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "airtable_id",
+              "displayName": "airtable_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3600,
+        -112
+      ],
+      "name": "Call 8/8 Email list - serper_v2",
+      "id": "23ec623c-6e20-4977-859e-844e5c9feb4d",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "content": "# User Starts\n#### Taking query details from user and creating empty airtable base",
+        "height": 336,
+        "width": 528,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "00e51064-893e-4f91-970a-b7fb176911db",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Finding Website Domains\n#### Searching for official company websites using AI Web agent",
+        "height": 336,
+        "width": 256,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1456,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "455a25d3-488c-446f-a397-751aa1242840",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# Web AI agent search\n#### Using AI web serach agent to find names of business decision maker",
+        "height": 336,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2000,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "3233093c-a4db-4a91-b8f8-c2dd8a87e459",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "# Finding Linkedin\n#### Searching for linkedin url from name of decision maker",
+        "height": 336,
+        "width": 256,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2272,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "a6caa888-e0b1-485a-bca8-30bf1c805da7",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "# Email Enrich\n#### Querying database (Muraena, Apollo, etc) using names and linkedin URL to find email id",
+        "height": 336,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2544,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "cf451f6e-382e-444f-89f5-528816c848da",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "# Verifying Email\n#### Using email verification services (no2bounce, catchall, etc) to find deliverable email ids",
+        "height": 336,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2816,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "fa156c56-d0a7-442a-8c91-eede4f9b2f9e",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "# Download List\n#### Putting the ready list of verified email ids into a google sheet and mailing back to user",
+        "height": 336,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3088,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "0f2a3482-25be-43c6-8582-718b03e93e16",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d71173b6-bc7e-47f9-9549-e96c3135d61f",
+              "name": "id",
+              "value": "={{ $('Create airtable').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "568849cf-3401-4f82-871e-1102d5b71020",
+              "name": "tables",
+              "value": "={{ $('Create airtable').item.json.tables }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2752,
+        -336
+      ],
+      "id": "5480ffcb-2ff6-44ea-8a50-686746a9205a",
+      "name": "id&tables",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "formTitle": "Google Dance",
+        "formDescription": "Creates a list of verified emails of decision makers of a service provider in a geogrpahical area.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Product/ Service Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Country",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "USA"
+                  },
+                  {
+                    "option": "UK"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "for CSV download link",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Number of locations",
+              "fieldType": "number",
+              "placeholder": "Be mindful, more locations consume more credits"
+            },
+            {
+              "fieldType": "html",
+              "elementName": "coming_soon",
+              "html": "<h3>Coming Soon...</h3>\n<ul>\n  <li>Verified Phone numbers</li>\n  <li>Web Serach AI agent to find decision makers</li>\n  <li>Automated Outreach</li>\n</ul>"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Build List"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        -256
+      ],
+      "id": "94044aec-7d47-472f-9cf9-d823fa19e3c0",
+      "name": "On form submission1",
+      "webhookId": "9603abb1-7b22-4d10-b1dc-2e4b891b2a3b"
+    },
+    {
+      "parameters": {
+        "sendTo": "nishil@repladder.com",
+        "subject": "New GoogleDance Run!",
+        "emailType": "text",
+        "message": "=Some ran the Google Dance n8n automation from this email id: {{ $json.Email }} for product/service named: {{ $json[\"Product/ Service Name\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1072,
+        -224
+      ],
+      "id": "8cce7ba3-2fc1-43a7-89da-898d50725288",
+      "name": "Send a message",
+      "webhookId": "21f37a00-16fa-4c51-a925-354e224188a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3YIHUbXrf4ebRIEc",
+          "name": "Gmail Anirudh Repladder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formId": "gDb1dd"
+      },
+      "type": "n8n-nodes-tallyforms.tallyTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -16
+      ],
+      "id": "ab9e9049-ec9a-4066-8255-2cf8faee4301",
+      "name": "Tally Trigger",
+      "webhookId": "f7a445aa-28e3-4538-89e9-adc975cd46d6",
+      "credentials": {
+        "tallyApi": {
+          "id": "pahXDCehwMAxOloJ",
+          "name": "Tally account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "88466a49-2c29-45b1-94ba-6b940f0155d1",
+              "name": "Product/ Service Name",
+              "value": "={{ $json.question_4x01db }}",
+              "type": "string"
+            },
+            {
+              "id": "36d00e04-4911-4531-b456-95b8fb56258a",
+              "name": "City",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "927021d5-bc27-4c7a-b035-4f2f3b5dba92",
+              "name": "Country",
+              "value": "={{ $json.question_pB8xxJ }}",
+              "type": "string"
+            },
+            {
+              "id": "fbed0bf2-208e-4693-a2b9-ff3ea3d312e4",
+              "name": "Email",
+              "value": "={{ $json.question_xab0BG }}",
+              "type": "string"
+            },
+            {
+              "id": "13c2c683-5e5a-4dfc-891d-86b7873f7b84",
+              "name": "Number of locations",
+              "value": "={{ $json.question_Z6kGy0 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "b81ce810-45c1-40ba-a267-4c78ae7801c1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        720,
+        -128
+      ],
+      "id": "7d7e3a8f-3a60-49ac-81d7-937f0553398d",
+      "name": "FormData"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "88466a49-2c29-45b1-94ba-6b940f0155d1",
+              "name": "Product/ Service Name",
+              "value": "={{ $('On form submission1').item.json['Product/ Service Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "36d00e04-4911-4531-b456-95b8fb56258a",
+              "name": "City",
+              "value": "={{ $('On form submission1').item.json.City }}",
+              "type": "string"
+            },
+            {
+              "id": "927021d5-bc27-4c7a-b035-4f2f3b5dba92",
+              "name": "Country",
+              "value": "={{ $('On form submission1').item.json.Country }}",
+              "type": "string"
+            },
+            {
+              "id": "fbed0bf2-208e-4693-a2b9-ff3ea3d312e4",
+              "name": "Email",
+              "value": "={{ $('On form submission1').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "13c2c683-5e5a-4dfc-891d-86b7873f7b84",
+              "name": "Number of locations",
+              "value": "={{ $('On form submission1').item.json['Number of locations'] }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        -256
+      ],
+      "id": "24d69ffb-39dc-47ad-96b8-4baa09317cff",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sendTo": "anirudh@repladder.com",
+        "subject": "New GoogleDance Run!",
+        "emailType": "text",
+        "message": "=Someone ran the Google Dance n8n automation from this email id: {{ $json.Email }} for product/service named: {{ $json[\"Product/ Service Name\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1072,
+        -32
+      ],
+      "id": "10a58479-97cc-43dd-a6e9-3c5a7174b957",
+      "name": "Send a message1",
+      "webhookId": "21f37a00-16fa-4c51-a925-354e224188a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3YIHUbXrf4ebRIEc",
+          "name": "Gmail Anirudh Repladder"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1344,
+        -112
+      ],
+      "id": "46f33783-bb9b-4760-9b01-3b66b5b03c4f",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {
+    "On form submission1": [
+      {
+        "json": {
+          "Product/ Service Name": "plumbers",
+          "City": "london",
+          "Country": "uk",
+          "Email": "anirudhchundawat97@gmail.com",
+          "Number of locations": 1,
+          "coming_soon": "<h3>Coming Soon...</h3>\r\n<ul>\r\n  <li>Verified Phone numbers</li>\r\n  <li>Web Serach AI agent to find decision makers</li>\r\n  <li>Automated Outreach</li>\r\n</ul>",
+          "submittedAt": "2025-12-01T22:23:52.428+05:30",
+          "formMode": "production"
+        }
+      }
+    ],
+    "Tally Trigger": [
+      {
+        "json": {
+          "id": "ZjXq2bv",
+          "formId": "gDb1dd",
+          "formName": "Google dance",
+          "respondentId": "eqaRKpk",
+          "createdAt": "2025-12-11T13:54:36.000Z",
+          "question_4x01db": "plumbers",
+          "question_pB8xxJ": "USA",
+          "question_xab0BG": "anirudhchundawat97@gmail.com",
+          "question_Z6kGy0": 10
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Form Response": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create airtable": {
+      "main": [
+        [
+          {
+            "node": "1/8 business_lookup - serper_v1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1/8 business_lookup - serper_v1": {
+      "main": [
+        [
+          {
+            "node": "2/8website_lookup - serper_v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2/8website_lookup - serper_v2": {
+      "main": [
+        [
+          {
+            "node": "3/8people_lookup - serper_v1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3/8people_lookup - serper_v1": {
+      "main": [
+        [
+          {
+            "node": "4/8agent_people_lookup - serper_v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4/8agent_people_lookup - serper_v2": {
+      "main": [
+        [
+          {
+            "node": "id&tables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5/8linkedin_lookup - serper_v2": {
+      "main": [
+        [
+          {
+            "node": "6/8email_lookup - serper_v1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6/8email_lookup - serper_v1": {
+      "main": [
+        [
+          {
+            "node": "7/8verify_email - serper_v1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7/8verify_email - serper_v1": {
+      "main": [
+        [
+          {
+            "node": "Call 8/8 Email list - serper_v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "id&tables": {
+      "main": [
+        [
+          {
+            "node": "5/8linkedin_lookup - serper_v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "Form Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tally Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "FormData",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "FormData": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "FormData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "MGlt9ruNT5LuyF4p",
+    "timezone": "Asia/Kolkata",
+    "saveExecutionProgress": true,
+    "availableInMCP": false
+  },
+  "versionId": "4eafda96-b36b-4454-bb1f-90810d3d98e1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "210a6b77e243e6c47c9fc1d41eaba753b733a641e32f81e389d9b77e62c760e2"
+  },
+  "id": "8SHTLJmlS21gZu7y",
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T11:38:59.261Z",
+      "createdAt": "2025-11-13T05:45:03.531Z",
+      "id": "PhyTAhEW0c0KDrXy",
+      "name": "ani_googledance"
+    }
+  ]
+}
